@@ -1,13 +1,14 @@
 import java.io.UnsupportedEncodingException;
 import java.security.*;
+import java.util.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.*;
-
 public class EncryptionUtility {
 
+	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	
 	public static String calculateHash(String secret, String url, String encryption) {
 
 		Mac shaHmac = null;
@@ -33,7 +34,7 @@ public class EncryptionUtility {
 		}
 
 		byte[] hash = shaHmac.doFinal(url.getBytes());
-		String check = Hex.encodeHexString(hash);
+		String check = bytesToHex(hash);
 
 		return check;
 	}
@@ -60,7 +61,7 @@ public class EncryptionUtility {
 
 		try {
 
-			nonce = new String(Base64.encodeBase64(nonceBytes), "UTF-8");
+			nonce = new String(Base64.getEncoder().encode(nonceBytes), "UTF-8");
 
 		} catch (UnsupportedEncodingException e) {
 
@@ -68,5 +69,20 @@ public class EncryptionUtility {
 		}
 
 		return nonce;
+	}
+	
+	private static String bytesToHex(byte[] bytes) {
+		
+	    char[] hexChars = new char[bytes.length * 2];
+	    
+	    for(int j = 0; j < bytes.length; j++) {
+	    	
+	        int v = bytes[j] & 0xFF;
+	        
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    
+	    return new String(hexChars);
 	}
 }
