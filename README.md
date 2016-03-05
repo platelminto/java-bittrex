@@ -1,5 +1,5 @@
 # java-bittrex
-Java wrapper for the 1.1 version of the Bittrex API. Methods return a String with the response in JSON format.
+Java wrapper for the 1.1 version of the Bittrex API (version 2 [here](https://github.com/platelminto/java-bittrex-2)). Methods return a String with the response in JSON format.
 
 ### Usage
 ```
