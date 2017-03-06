@@ -45,7 +45,7 @@ Please attach your key & secret in a text file, with the following format, and p
 <dependency>
   <groupId>com.mashape.unirest</groupId>
   <artifactId>unirest-java</artifactId>
-  <version>1.4.7</version>
+  <version>1.4.9</version>
 </dependency>
 ```
 
