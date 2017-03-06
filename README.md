@@ -1,5 +1,5 @@
 # java-bittrex
-Java wrapper for the 1.1 version of the Bittrex API (version 2 [here](https://github.com/platelminto/java-bittrex-2)). Methods return a String with the response in JSON format.
+Java wrapper for the 1.1 version of the Bittrex API (version 2 [here](https://github.com/platelminto/java-bittrex-2)). Methods return a String with the response in JSON format, and can then easily be requested for information by converting them into a map using the Bittrex.getMapFromResponse() method.
 
 ### Usage
 ```
@@ -8,12 +8,21 @@ public static void main(String...args) {
 	Bittrex wrapper = new Bittrex();
 	wrapper.setAuthKeysFromTextFile("keys.txt");
 
-	System.out.println(wrapper.getMarketSummary("BTC-LTC"));
+	String rawResponse = wrapper.getMarketSummary("BTC-LTC");
+	HashMap<String, String> responseMap = Bittrex.getMapFromResponse(rawResponse);
+		
+	// See available information using present keys
+	for(String key : responseMap.keySet())
+			
+		System.out.print(key + " ");
+		
+	// Get wanted value using a key found in the KeySet
+	responseMap.get("Volume");
 }
 ```
 ### Key & Secret
 
-Please attach your key & secret in a text file and place it in the same folder as your source code. It should be formatted like so:
+Please attach your key & secret in a text file, with the following format, and place it in the same folder as the source code.
 
 ```
  - apikey: "key"
