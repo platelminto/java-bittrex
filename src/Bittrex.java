@@ -1,6 +1,10 @@
+package wrapper;
+
 import java.util.*;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import com.mashape.unirest.http.*;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -269,6 +273,15 @@ public class Bittrex {
 		return urlAttachment;
 	}
 
+	public static HashMap<String, String> getMapFromResponse(String response) {
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		
+		final HashMap<String, String> map = gson.fromJson(response.substring(response.lastIndexOf("\"map\"") + "\"map\"".length() + 2, response.indexOf("}") + 1), new TypeToken<HashMap<String, String>>(){}.getType()); // Sorry.
+		
+		return map;
+	}
+	
 	private String getResponseBody(String url) {
 
 		String responseJson = null;
