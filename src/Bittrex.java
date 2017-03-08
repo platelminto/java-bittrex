@@ -279,15 +279,33 @@ public class Bittrex {
 		return urlAttachment;
 	}
 
-	public static HashMap<String, String> getMapFromResponse(String response) {
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	public static List<HashMap<String, String>> getMapsFromResponse(String response) {
 		
-		final String cleanResponse = response.replaceAll("[\\[\\]]", "");
+		final List<HashMap<String, String>> maps = new ArrayList<>();
+		
+		if(!response.contains("[")) {
+			
+			maps.add(jsonMapToHashMap(response.substring(response.lastIndexOf("\"result\":") + "\"result\":".length(), response.indexOf("}") + 1))); // Sorry.
+			
+		} else {
+			
+			final String resultArray = response.substring(response.indexOf("\"result\":") + "\"result\":".length() + 1, response.lastIndexOf("]"));
+			
+			final String[] jsonMaps = resultArray.split(",(?=\\{)");
+			
+			for(String map : jsonMaps)
+				
+				maps.add(jsonMapToHashMap(map));
+		}
 
-		final HashMap<String, String> map = gson.fromJson(cleanResponse.substring(cleanResponse.lastIndexOf("\"result\":") + "\"result\":".length(), cleanResponse.indexOf("}") + 1), new TypeToken<HashMap<String, String>>(){}.getType()); // Sorry.
-
-		return map;
+		return maps;
+	}
+	
+	private static HashMap<String, String> jsonMapToHashMap(String jsonMap) {
+		
+		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		
+		return gson.fromJson(jsonMap, new TypeToken<HashMap<String, String>>(){}.getType());
 	}
 
 	private String getResponseBody(String url) {
