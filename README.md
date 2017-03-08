@@ -9,15 +9,30 @@ public static void main(String...args) {
 	wrapper.setAuthKeysFromTextFile("keys.txt");
 
 	String rawResponse = wrapper.getMarketSummary("BTC-LTC");
-	HashMap<String, String> responseMap = Bittrex.getMapFromResponse(rawResponse);
-		
-	// See available information using present keys
-	for(String key : responseMap.keySet())
+	List<HashMap<String, String>> responseMapList = Bittrex.getMapsFromResponse(rawResponse);
 			
+	// In some cases, only 1 map is actually returned - if this is assured:
+	HashMap<String, String> onlyMap = responseMapList.get(0);
+			
+	// See available information using present keys
+	for(String key : onlyMap.keySet())
+				
 		System.out.print(key + " ");
-		
+			
 	// Get wanted value using a key found in the KeySet
-	responseMap.get("Volume");
+	onlyMap.get("Volume");
+		
+	// Some responses have more than 1 map - the List must be traversed in these cases.
+	String otherRawResponse = wrapper.getBalances();
+	List<HashMap<String, String>> allBalancesMapList = Bittrex.getMapsFromResponse(otherRawResponse);
+		
+	for(HashMap<String, String> map : responseMapList)
+		
+		System.out.println("\n" + map);
+			
+	// And then the wanted map can be used
+		
+	allBalancesMapList.get(3).get("Balance");
 }
 ```
 ### Key & Secret
