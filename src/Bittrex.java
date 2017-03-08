@@ -282,8 +282,10 @@ public class Bittrex {
 	public static HashMap<String, String> getMapFromResponse(String response) {
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		
+		final String cleanResponse = response.replaceAll("[\\[\\]]", "");
 
-		final HashMap<String, String> map = gson.fromJson(response.substring(response.lastIndexOf("\"result\"") + "\"result\"".length() + 2, response.indexOf("}") + 1), new TypeToken<HashMap<String, String>>(){}.getType()); // Sorry.
+		final HashMap<String, String> map = gson.fromJson(cleanResponse.substring(cleanResponse.lastIndexOf("\"result\":") + "\"result\":".length(), cleanResponse.indexOf("}") + 1), new TypeToken<HashMap<String, String>>(){}.getType()); // Sorry.
 
 		return map;
 	}
