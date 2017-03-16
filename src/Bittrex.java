@@ -3,6 +3,7 @@ package wrapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import org.apache.http.HttpResponse;
@@ -16,21 +17,39 @@ import com.google.gson.reflect.TypeToken;
 public class Bittrex {
 
 	public static final String ORDERBOOK_BUY = "buy", ORDERBOOK_SELL = "sell", ORDERBOOK_BOTH = "both";
+	public static final int DEFAULT_RETRY_ATTEMPTS = 1;
+	public static final int DEFAULT_RETRY_DELAY = 15;
 	private static final Exception InvalidStringListException = new Exception("Must be in key-value pairs");
 	private final String API_VERSION = "1.1", INITIAL_URL = "https://bittrex.com/api/";
 	private final String PUBLIC = "public", MARKET = "market", ACCOUNT = "account";
 	private final String encryptionAlgorithm = "HmacSHA512";
 	private String apikey;
 	private String secret;
+	private final int retryAttempts;
+	private int retryAttemptsLeft;
+	private final int retryDelaySeconds;
 
-	public Bittrex(String apikey, String secret) {
+	public Bittrex(String apikey, String secret, int retryAttempts, int retryDelaySeconds) {
 
 		this.apikey = apikey;
 		this.secret = secret;
+		this.retryAttempts = retryAttempts;
+		this.retryDelaySeconds = retryDelaySeconds;
+		
+		retryAttemptsLeft = retryAttempts;
 	}
 
+	public Bittrex(int retryAttempts, int retryDelaySeconds) {
+		
+		this.retryAttempts = retryAttempts;
+		this.retryDelaySeconds = retryDelaySeconds;
+		
+		retryAttemptsLeft = retryAttempts;
+	}
+	
 	public Bittrex() {
 
+		this(DEFAULT_RETRY_ATTEMPTS, DEFAULT_RETRY_DELAY);
 	}
 
 	public void setAuthKeysFromTextFile(String textFile) { // Add the text file containing the key & secret in the same path as the source code
@@ -280,41 +299,41 @@ public class Bittrex {
 	}
 
 	public static List<HashMap<String, String>> getMapsFromResponse(String response) {
-		
+
 		final List<HashMap<String, String>> maps = new ArrayList<>();
-		
+
 		if(!response.contains("[")) {
-			
+
 			maps.add(jsonMapToHashMap(response.substring(response.lastIndexOf("\"result\":") + "\"result\":".length(), response.indexOf("}") + 1))); // Sorry.
-			
+
 		} else {
-			
+
 			final String resultArray = response.substring(response.indexOf("\"result\":") + "\"result\":".length() + 1, response.lastIndexOf("]"));
-			
+
 			final String[] jsonMaps = resultArray.split(",(?=\\{)");
-			
+
 			for(String map : jsonMaps)
-				
+
 				maps.add(jsonMapToHashMap(map));
 		}
 
 		return maps;
 	}
-	
+
 	private static HashMap<String, String> jsonMapToHashMap(String jsonMap) {
-		
+
 		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		
+
 		return gson.fromJson(jsonMap, new TypeToken<HashMap<String, String>>(){}.getType());
 	}
 
-	private String getResponseBody(String url) {
+	private String getResponseBody(final String baseUrl) {
 
 		String result = null;
-		url += "apikey=" + apikey + "&nonce=" + EncryptionUtility.generateNonce();
+		final String url = baseUrl + "apikey=" + apikey + "&nonce=" + EncryptionUtility.generateNonce();
 
 		try {
-
+			
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpGet request = new HttpGet(url);
 
@@ -330,14 +349,40 @@ public class Bittrex {
 			while ((line = reader.readLine()) != null)
 
 				resultBuffer.append(line);
-			
+
 			result = resultBuffer.toString();
 
+		} catch (UnknownHostException e) {
+			
+			if(retryAttemptsLeft-- > 0) {
+				
+				System.err.println("Could not connect to host - retrying in " + retryDelaySeconds + " seconds...");;
+				
+				try {
+					
+					Thread.sleep(retryDelaySeconds * 1000);
+					
+				} catch (InterruptedException e1) {
+					
+					e1.printStackTrace();
+				}
+				
+				result = getResponseBody(baseUrl);
+				
+			} else {
+				
+				throw new ReconnectionAttemptsExceededException("Maximum amount of attempts to connect to host exceeded.");
+			}
+			
 		} catch (IOException e) {
 
 			e.printStackTrace();
+			
+		} finally {
+			
+			retryAttemptsLeft = retryAttempts;
 		}
-		
+
 		return result;
 	}
 }
