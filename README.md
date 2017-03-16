@@ -1,5 +1,5 @@
 # java-bittrex
-Java wrapper for the 1.1 version of the [Bittrex API](https://bittrex.com/Home/Api). Methods return a String with the response in JSON format, and can then easily be requested for information by converting them into a map using the static getMapsFromResponse() method.
+Java wrapper for the 1.1 version of the [Bittrex API](https://bittrex.com/Home/Api). Methods return a String with the response in JSON format, and can then easily be requested for information by converting them into a map using the static ```getMapsFromResponse()``` method.
 
 ### Usage
 ```
