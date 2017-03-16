@@ -35,6 +35,28 @@ public static void main(String...args) {
 	allBalancesMapList.get(3).get("Balance");
 }
 ```
+
+Additionally, if a constant internet connection isn't available, connection attempts & handling of connection failures can be specified in the constructor, with the handling of the ```ReconnectionAttemptsExceededException```.
+
+```
+	// Construct wrapper object with 3 connection attempts, and a 10 second delay between each attempt.
+	Bittrex wrapper = new Bittrex(3, 10);
+	wrapper.setAuthKeysFromTextFile("keys.txt");
+
+	try {
+			
+		final String response = wrapper.getBalance("DOGE");
+			
+		System.out.println(response);
+		System.out.println(Bittrex.getMapsFromResponse(response).get(0).get("Balance"));
+		System.out.println(Bittrex.getMapsFromResponse(wrapper.getBalance("BTC")).get(0).get("Balance"));
+			
+	 // If all 3 attempts fail, an unchecked exception is thrown, and can be handled with a simple try/catch.
+	} catch (ReconnectionAttemptsExceededException e) {
+
+		System.err.println("Connection failed.");
+	}
+```
 ### Key & Secret
 
 Please attach your key & secret in a text file, with the following format, and place it in the same folder as the source code.
