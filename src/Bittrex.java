@@ -354,7 +354,7 @@ public class Bittrex {
 			
 			if(retryAttemptsLeft-- > 0) {
 				
-				System.err.println("Could not connect to host - retrying in " + retryDelaySeconds + " seconds...");;
+				System.err.printf("Could not connect to host - retrying in %d seconds... [%d/%d]%n", retryDelaySeconds, retryAttempts - retryAttemptsLeft, retryAttempts);
 				
 				try {
 					
