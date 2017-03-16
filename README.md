@@ -19,6 +19,8 @@ public static void main(String...args) {
 				
 		System.out.print(key + " ");
 			
+	System.out.println();		
+	
 	// Get wanted value using a key found in the KeySet
 	onlyMap.get("Volume");
 		
@@ -26,9 +28,9 @@ public static void main(String...args) {
 	String otherRawResponse = wrapper.getBalances();
 	List<HashMap<String, String>> allBalancesMapList = Bittrex.getMapsFromResponse(otherRawResponse);
 		
-	for(HashMap<String, String> map : responseMapList)
+	for(HashMap<String, String> map : allBalancesMapList)
 		
-		System.out.println("\n" + map);
+		System.out.println(map);
 			
 	// And then the wanted map can be used
 		
