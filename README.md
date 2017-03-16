@@ -70,7 +70,7 @@ Please attach your key & secret in a text file, with the following format, and p
 
 ### Dependencies
 
-- Google gson
+- [Google gson](https://github.com/google/gson)
 
 ```
 <dependency>
@@ -79,7 +79,7 @@ Please attach your key & secret in a text file, with the following format, and p
   <version>2.4</version>
 </dependency>
 ```
-- Apache HttpClient
+- [Apache HttpClient](https://hc.apache.org/httpcomponents-client-ga/)
 ```
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
