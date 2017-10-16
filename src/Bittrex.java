@@ -1,13 +1,11 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.*;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -247,7 +245,7 @@ public class Bittrex {
 
 			throw InvalidStringListException;
 
-		HashMap<String, String> map = new HashMap<String, String>();
+		HashMap<String, String> map = new HashMap<>();
 
 		for(int i = 0; i < strings.length; i += 2) // Each key will be i, with the following becoming its value
 
@@ -332,13 +330,12 @@ public class Bittrex {
 
 		try {
 			
-			HttpClient client = HttpClientBuilder.create().build();
+			HttpClient client = HttpClientBuilder.create().setRetryHandler(new DefaultHttpRequestRetryHandler(0, false)).build();
+			
 			HttpGet request = new HttpGet(url);
-
 			request.addHeader("apisign", EncryptionUtility.calculateHash(secret, url, encryptionAlgorithm)); // Attaches signature as a header
 
 			HttpResponse httpResponse = client.execute(request);
-
 			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
 
 			StringBuffer resultBuffer = new StringBuffer();
@@ -350,7 +347,7 @@ public class Bittrex {
 
 			result = resultBuffer.toString();
 
-		} catch (UnknownHostException e) {
+		} catch (UnknownHostException | SocketException e) {
 			
 			if(retryAttemptsLeft-- > 0) {
 				
@@ -373,7 +370,7 @@ public class Bittrex {
 			}
 			
 		} catch (IOException e) {
-
+			
 			e.printStackTrace();
 			
 		} finally {
