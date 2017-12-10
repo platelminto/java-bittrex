@@ -1,14 +1,19 @@
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.*;
-
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.SocketException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class Bittrex {
 
@@ -326,17 +331,16 @@ public class Bittrex {
 	private String getResponseBody(final String baseUrl) {
 
 		String result = null;
-		final String url = baseUrl + "apikey=" + apikey + "&nonce=" + EncryptionUtility.generateNonce();
+		final String urlString = baseUrl + "apikey=" + apikey + "&nonce=" + EncryptionUtility.generateNonce();
 
 		try {
-			
-			HttpClient client = HttpClientBuilder.create().setRetryHandler(new DefaultHttpRequestRetryHandler(0, false)).build();
-			
-			HttpGet request = new HttpGet(url);
-			request.addHeader("apisign", EncryptionUtility.calculateHash(secret, url, encryptionAlgorithm)); // Attaches signature as a header
 
-			HttpResponse httpResponse = client.execute(request);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+            URL url = new URL(urlString);
+            HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
+            httpsURLConnection.setRequestMethod("GET");
+            httpsURLConnection.setRequestProperty("apisign", EncryptionUtility.calculateHash(secret, urlString, encryptionAlgorithm));
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpsURLConnection.getInputStream()));
 
 			StringBuffer resultBuffer = new StringBuffer();
 			String line = "";
