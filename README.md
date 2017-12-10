@@ -79,14 +79,6 @@ Please attach your key & secret in a text file, with the following format, and p
   <version>2.4</version>
 </dependency>
 ```
-- [Apache HttpClient](https://hc.apache.org/httpcomponents-client-ga/)
-```
-<dependency>
-  <groupId>org.apache.httpcomponents</groupId>
-  <artifactId>httpclient</artifactId>
-  <version>4.5.2</version>
-</dependency>
-```
 
 ### Donate
 
