@@ -68,18 +68,6 @@ Please attach your key & secret in a text file, with the following format, and p
  - secret: "secret"
 ```
 
-### Dependencies
-
-- [Google gson](https://github.com/google/gson)
-
-```
-<dependency>
-  <groupId>com.google.code.gson</groupId>
-  <artifactId>gson</artifactId>
-  <version>2.4</version>
-</dependency>
-```
-
 ### Donate
 
 Donations are appreciated!
