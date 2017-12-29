@@ -1,7 +1,3 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -323,9 +319,19 @@ public class Bittrex {
 
 	private static HashMap<String, String> jsonMapToHashMap(String jsonMap) {
 
-		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-		return gson.fromJson(jsonMap, new TypeToken<HashMap<String, String>>(){}.getType());
+		final HashMap<String, String> map = new HashMap<>();
+		
+		final String[] keyValuePairs = jsonMap.replaceAll("[{}]", "").split(",");
+		
+		for(String pair : keyValuePairs) {
+			
+			pair = pair.replaceAll("\"", "");
+			final String[] pairValues = pair.split(":");
+			
+			map.put(pairValues[0], pairValues[1]);
+		}
+	    
+	    return map;
 	}
 
 	private String getResponseBody(final String baseUrl) {
