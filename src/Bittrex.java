@@ -326,7 +326,7 @@ public class Bittrex {
 		for(String pair : keyValuePairs) {
 			
 			pair = pair.replaceAll("\"", "");
-			final String[] pairValues = pair.split(":");
+			final String[] pairValues = pair.split(":",2);
 			
 			map.put(pairValues[0], pairValues[1]);
 		}
